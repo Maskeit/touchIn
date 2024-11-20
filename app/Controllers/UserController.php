@@ -36,6 +36,15 @@ class UserController
         return $users;
     }
 
+    public function getUser($id){
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = $id");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+        return null;
+    }
     public function findByPin($pin)
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE pin = ?");
