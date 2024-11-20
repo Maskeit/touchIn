@@ -7,7 +7,10 @@
 
 Mediante el método `POST` el endpoint es 
 <pre><code>http://localhost:8000/register </code></pre>
-
+### Headers
+```json
+Content-Type: application/json
+```
 ### Enviar el body en formato JSON:
 
 <pre><code>{
@@ -39,7 +42,10 @@ si falta un campo o atributo en la solicitud podrias tener este error:
 
 Mediante el método `POST` el endpoint es:
 <pre><code>http://localhost:8000/auth/pin</code></pre>
-
+### Headers
+```json
+Content-Type: application/json
+```
 Se necesita por el momento el `pin` solamente. En el body se tiene:
 
 <pre><code>{
@@ -70,6 +76,11 @@ Si la respuesta es exitosa (`200`):
 ## Para obtener la lista de usuarios completa
 Mediante el método `GET` el endpoint es:
 <pre><code> http://localhost:8000/users </pre></code>
+### Headers
+```json
+Content-Type:application/ld+json
+Accept:application/ld+json
+```
 Y el cuerpo de la respuesta es la lista de usuarios:
 
 ```json
@@ -89,6 +100,11 @@ Y el cuerpo de la respuesta es la lista de usuarios:
 
 Mediante el método `GET` el endpoint es:
 <pre><code> http://localhost:8000/users/id </pre></code>
+### Headers
+```json
+Content-Type:application/ld+json
+Accept:application/ld+json
+```
 Y el cuerpo de la respuesta es el usuario:
 ```json
 {
