@@ -1,4 +1,5 @@
 <?php
+namespace APP\Models;
 
 class User
 {
@@ -72,20 +73,67 @@ class User
         return password_verify($password, $this->passwordHash);
     }
 
+
+    // Método estático para obtener todos los usuarios
+    public static function getAll($conn)
+    {
+        $stmt = $conn->prepare("SELECT id, name, email, pin, created_at FROM users");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $users = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $users[] = $row;
+        }
+
+        return $users;
+    }
+    // Método estático para buscar un usuario por ID
+    public static function findById($conn, $id)
+    {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+
+        return null;
+    }
+    // Método estático para buscar un usuario por PIN
+    public static function findByPin($conn, $pin)
+    {
+        $stmt = $conn->prepare("SELECT * FROM users WHERE pin = ?");
+        $stmt->bind_param("s", $pin);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        }
+
+        return null;
+    }
     // Guardar Usuario en la Base de Datos
     public function saveToDatabase($conn)
     {
-        // Query para insertar un nuevo usuario
         $stmt = $conn->prepare("INSERT INTO users (name, email, fingerprint_template, pin, created_at) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssis", $this->name, $this->email, $this->fingerprintTemplate, $this->pin, $this->createdAt);
-
+    
         if ($stmt->execute()) {
             $this->id = $stmt->insert_id; // Asignar el ID generado por la base de datos
             return true;
         }
-
-        return false;
+    
+        if ($stmt->errno === 1062) { // Código de error para clave duplicada
+            throw new \Exception("PIN already exists for another user.");
+        }
+    
+        throw new \Exception("Failed to save user: " . $stmt->error);
     }
+    
 
     // Buscar Usuario por Correo
     public static function findByEmail($conn, $email)

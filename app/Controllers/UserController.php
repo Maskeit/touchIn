@@ -1,5 +1,8 @@
 <?php
-require_once './app/Models/User.php';
+namespace App\Controllers;
+
+use App\Models\User;
+use App\Models\Binnacle;
 
 class UserController
 {
@@ -15,47 +18,36 @@ class UserController
         if (!isset($input['name'], $input['email'], $input['pin'], $input['fingerprint_template'])) {
             return ["error" => "Missing required fields."];
         }
-
+    
         $user = new User($input['name'], $input['email'], $input['fingerprint_template'], $input['pin']);
-        if ($user->saveToDatabase($this->db)) {
-            return ["message" => "User registered successfully.", "user_id" => $user->getId()];
+        try {
+            if ($user->saveToDatabase($this->db)) {
+                return ["message" => "User registered successfully.", "user_id" => $user->getId()];
+            }
+        } catch (\Exception $e) {
+            return ["error" => $e->getMessage()];
         }
-
+    
         return ["error" => "Failed to register user."];
     }
+    
 
     public function getAllUsers()
     {
-        $stmt = $this->db->prepare("SELECT id, name, email, pin, created_at FROM users");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $users = [];
-        while ($row = $result->fetch_assoc()) {
-            $users[] = $row;
-        }
-        return $users;
+        return User::getAll($this->db);
     }
 
-    public function getUser($id){
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE id = $id");
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        }
-        return null;
+    public function getUser($id)
+    {
+        return User::findById($this->db, $id);
     }
+
     public function findByPin($pin)
     {
-        $stmt = $this->db->prepare("SELECT * FROM users WHERE pin = ?");
-        $stmt->bind_param("s", $pin);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        }
-
-        return null;
+        $user = User::findByPin($this->db, $pin); // Busca al usuario por PIN
+        Binnacle::logAttempt($this->db, $user ? $user['id'] : null, $user !== null); // Registra el intento
+    
+        return $user; // Devuelve el usuario o null
     }
+    
 }

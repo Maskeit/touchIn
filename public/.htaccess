@@ -1,0 +1,15 @@
+# Habilitar el motor de reescritura
+RewriteEngine On
+
+# Establecer el directorio base
+RewriteBase /public/
+
+# Si el archivo o directorio solicitado existe, permite el acceso directo
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Reescribir URLs amigables hacia los archivos correspondientes
+RewriteRule ^register$ register.html [L]
+RewriteRule ^dashboard$ dashboard.html [L]
+RewriteRule ^binnacle$ binnacle.html [L]
+RewriteRule ^$ index.html [L] # Para redirigir "/" a index.html

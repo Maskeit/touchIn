@@ -1,4 +1,6 @@
 <?php
+namespace public;
+use App\Models\DB;
 require_once __DIR__ . '/../app/Models/DB.php';
 
 $db = new DB();
