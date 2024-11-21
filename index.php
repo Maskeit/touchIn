@@ -1,6 +1,10 @@
 <?php
-require_once __DIR__ . '/app/Models/DB.php';
-require_once __DIR__ . '/app/Controllers/UserController.php';
+require_once __DIR__ . '/vendor/autoload.php'; // Para cargar automáticamente las clases
+
+use App\Models\DB;
+use App\Controllers\UserController;
+use App\Controllers\BinnacleController;
+
 
 // Configuración de encabezados
 header("Content-Type: application/json");
@@ -13,11 +17,19 @@ $conn = $db->connect();
 // Inicializa el controlador de usuarios con la conexión
 $userController = new UserController($conn);
 
+// Inicializa el controlador de la bitacora con la conexión
+$binnacleController = new BinnacleController($conn);
+
 // Ruta base y método
 $method = $_SERVER['REQUEST_METHOD'];
 $requestUri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 $input = json_decode(file_get_contents("php://input"), true);
 
+// Si la ruta es la raíz, redirige al dashboard
+if ($requestUri === '/') {
+    header('Location: /src/dashboard.php');
+    exit;
+}
 // Manejador de rutas
 if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
     // Endpoint dinámico /user/{id}
@@ -63,13 +75,33 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
                     exit;
                 }
 
-                $user = $userController->findByPin($input['pin']);
+                $user = $userController->findByPin($input['pin']); // Lógica de autenticación
                 if ($user) {
                     echo json_encode(["message" => "Authenticated", "user" => $user]);
                 } else {
                     http_response_code(401);
                     echo json_encode(["error" => "Invalid PIN."]);
                 }
+            } else {
+                http_response_code(405);
+                echo json_encode(["error" => "Method not allowed."]);
+            }
+            break;
+
+            // Obtener todos los intentos registrados en la bitacora
+        case '/binnacle':
+            if ($method === 'GET') {
+                echo json_encode($binnacleController->getAllAttempts());
+            } else {
+                http_response_code(405);
+                echo json_encode(["error" => "Method not allowed."]);
+            }
+            break;
+            // obtener los registros de usuario especifico
+        case preg_match('/^\/binnacle\/user\/(\d+)$/', $requestUri, $matches) ? true : false:
+            if ($method === 'GET') {
+                $userId = intval($matches[1]);
+                echo json_encode($binnacleController->getAttemptsByUser($userId));
             } else {
                 http_response_code(405);
                 echo json_encode(["error" => "Method not allowed."]);
