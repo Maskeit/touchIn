@@ -11,3 +11,8 @@ webpack.config.js
 /node_modules/
 /vendor/
 .gitignore.main
+
+*.config.js
+*.lock
+*.babelrc
+*.sql
