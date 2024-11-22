@@ -1,3 +1,12 @@
-/vendor
+# Ignorar archivos de desarrollo en producción
+/src/
+*.config.js
+*.json
+*.lock
+*.babelrc
+*.sql
 /node_modules/
-src/
+/vendor/
+/postcss.config.js
+/tailwind.config.js
+/webpack.config.js
