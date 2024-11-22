@@ -31,56 +31,14 @@ $method = $_SERVER['REQUEST_METHOD'];
 $requestUri = explode('?', $_SERVER['REQUEST_URI'], 2)[0];
 $input = json_decode(file_get_contents("php://input"), true);
 
-// Si la ruta es la raíz, redirige al dashboard
-if ($requestUri === '/') {
-    header('Location: /src/dashboard.php');
-    exit;
-}
-// Manejador de rutas
-if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
-    // Endpoint dinámico /user/{id}
-    if ($method === 'GET') {
-        $id = intval($matches[1]); // Extrae el ID de la URL
-        $user = $userController->getUser($id);
-        if ($user) {
-            echo json_encode($user);
-        } else {
-            http_response_code(404);
-            echo json_encode(["error" => "User not found."]);
-        }
-    } else {
-        http_response_code(405); // Método no permitido
-        echo json_encode(["error" => "Method not allowed."]);
-    }
-} else {
-    // Manejo de otros endpoints
-    switch ($requestUri) {
-        case '/register':
-            if ($method === 'POST') {
-                // Verifica que se reciban los datos necesarios
-                if (empty($input['name']) || empty($input['email'])) {
-                    http_response_code(400); // Bad Request
-                    echo json_encode(["error" => "Missing required fields: name or email."]);
-                    exit;
-                }        
-                // Procesa el registro
-                echo json_encode($userController->register($input));
-            } else {
-                http_response_code(405); // Método no permitido
-                echo json_encode(["error" => "Method not allowed."]);
-            }
-            break;        
+// Si la solicitud es para la API
+if (strpos($requestUri, '/api/') === 0) {
+    // Elimina el prefijo /api/ para simplificar el manejo de rutas
+    $apiPath = str_replace('/api/', '', $requestUri);
 
-        case '/users':
-            if ($method === 'GET') {
-                echo json_encode($userController->getAllUsers());
-            } else {
-                http_response_code(405);
-                echo json_encode(["error" => "Method not allowed."]);
-            }
-            break;
-
-        case '/auth/pin':
+    // Manejo de rutas de API
+    switch ($apiPath) {
+        case 'auth/pin':
             if ($method === 'POST') {
                 if (!isset($input['pin'])) {
                     http_response_code(400);
@@ -88,7 +46,7 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
                     exit;
                 }
 
-                $user = $userController->findByPin($input['pin']); // Lógica de autenticación
+                $user = $userController->findByPin($input['pin']);
                 if ($user) {
                     echo json_encode(["message" => "Authenticated", "user" => $user]);
                 } else {
@@ -101,8 +59,30 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
             }
             break;
 
-            // Obtener todos los intentos registrados en la bitacora
-        case '/binnacle':
+        case 'users':
+            if ($method === 'GET') {
+                echo json_encode($userController->getAllUsers());
+            } else {
+                http_response_code(405);
+                echo json_encode(["error" => "Method not allowed."]);
+            }
+            break;
+
+        case 'register':
+            if ($method === 'POST') {
+                if (empty($input['name']) || empty($input['email'])) {
+                    http_response_code(400);
+                    echo json_encode(["error" => "Missing required fields: name or email."]);
+                    exit;
+                }
+                echo json_encode($userController->register($input));
+            } else {
+                http_response_code(405);
+                echo json_encode(["error" => "Method not allowed."]);
+            }
+            break;
+
+        case 'binnacle':
             if ($method === 'GET') {
                 echo json_encode($binnacleController->getAllAttempts());
             } else {
@@ -110,8 +90,8 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
                 echo json_encode(["error" => "Method not allowed."]);
             }
             break;
-            // obtener los registros de usuario especifico
-        case preg_match('/^\/binnacle\/user\/(\d+)$/', $requestUri, $matches) ? true : false:
+
+        case (preg_match('/^binnacle\/user\/(\d+)$/', $apiPath, $matches) ? true : false):
             if ($method === 'GET') {
                 $userId = intval($matches[1]);
                 echo json_encode($binnacleController->getAttemptsByUser($userId));
@@ -123,6 +103,7 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
 
         default:
             http_response_code(404);
-            echo json_encode(["error" => "Endpoint not found."]);
+            echo json_encode(["error" => "API endpoint not found."]);
     }
+    exit;
 }

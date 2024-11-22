@@ -1,14 +1,14 @@
-# Sirve los archivos del frontend desde /public/
+# Habilitar el motor de reescritura
 RewriteEngine On
 
-# Si el archivo o directorio existe, sírvelo directamente
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# 1. Las solicitudes que comiencen con /api deben dirigirse al index.php para manejar la API
+RewriteCond %{REQUEST_URI} ^/api/ [NC]
+RewriteRule ^(.*)$ index.php [L,QSA]
 
-# Si no existe, redirige la petición a /public/index.html
-RewriteRule ^(.*)$ /public/$1 [L]
+# 2. Las solicitudes para archivos o directorios existentes deben servirse directamente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-# Manejo especial para la API
-# Todas las rutas que empiecen con /api las redirige al index.php para la API
-RewriteCond %{REQUEST_URI} ^/api
-RewriteRule ^api/(.*)$ index.php [L]
+# 3. Las demás solicitudes deben dirigirse a /public/
+RewriteRule ^(.*)$ public/$1 [L]

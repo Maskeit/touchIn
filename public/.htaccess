@@ -1,6 +1,9 @@
 # Habilitar el motor de reescritura
 RewriteEngine On
-​Header set Access-Control-Allow-Origin "*"
+
+# Permitir CORS si es necesario
+Header set Access-Control-Allow-Origin "*"
+
 # Establecer el directorio base
 RewriteBase /public/
 
@@ -12,4 +15,5 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^register$ register.html [L]
 RewriteRule ^dashboard$ dashboard.html [L]
 RewriteRule ^binnacle$ binnacle.html [L]
-RewriteRule ^$ index.html [L] # Para redirigir "/" a index.html
+RewriteRule ^$ index.html [L] # Redirigir "/" a index.html
+RewriteRule ^.*$ index.html [L] # Para manejar rutas no encontradas en el frontend
