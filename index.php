@@ -5,11 +5,17 @@ use App\Models\DB;
 use App\Controllers\UserController;
 use App\Controllers\BinnacleController;
 
-
-// Configuración de encabezados
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
+
 date_default_timezone_set('America/Mexico_City');
 
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 // Inicializa la conexión a la base de datos
 $db = new DB();
 $conn = $db->connect();
@@ -51,12 +57,19 @@ if (preg_match('/^\/user\/(\d+)$/', $requestUri, $matches)) {
     switch ($requestUri) {
         case '/register':
             if ($method === 'POST') {
+                // Verifica que se reciban los datos necesarios
+                if (empty($input['name']) || empty($input['email'])) {
+                    http_response_code(400); // Bad Request
+                    echo json_encode(["error" => "Missing required fields: name or email."]);
+                    exit;
+                }        
+                // Procesa el registro
                 echo json_encode($userController->register($input));
             } else {
-                http_response_code(405);
+                http_response_code(405); // Método no permitido
                 echo json_encode(["error" => "Method not allowed."]);
             }
-            break;
+            break;        
 
         case '/users':
             if ($method === 'GET') {

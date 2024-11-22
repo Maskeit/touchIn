@@ -1,6 +1,6 @@
 # Habilitar el motor de reescritura
 RewriteEngine On
-
+​Header set Access-Control-Allow-Origin "*"
 # Establecer el directorio base
 RewriteBase /public/
 

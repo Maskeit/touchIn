@@ -1,9 +1,8 @@
 import "./css/tailwind.css";
 import { renderMenu } from "./js/components/menu";
 import { Register } from "./js/modules/register";
-import { setupDashboard } from "./js/modules/dashboard";
-import { setupBinnacle } from "./js/modules/binnacle";
-import { setupHome } from "./js/modules/home";
+import { DashboardModule } from "./js/modules/dashboard";
+import { Binnacle } from "./js/modules/binnacle";
 
 if (module.hot) {
   module.hot.accept();
@@ -25,22 +24,17 @@ document.addEventListener("DOMContentLoaded", () => {
     : `${path}.html`;
 
   switch (normalizedPath) {
-    case "/public/index.html":
-    case "/index.html":
-      setupHome();
-      break;
     case "/public/dashboard.html":
     case "/dashboard.html":
-      setupDashboard();
+      DashboardModule.setupDashboard();
       break;
     case "/public/register.html":
     case "/register.html":
-      Register.displayForm();
       Register.setupRegisterForm();
       break;
     case "/public/binnacle.html":
     case "/binnacle.html":
-      setupBinnacle();
+      Binnacle.setupBinnacle();
       break;
     default:
       console.error("Ruta no encontrada:", path);

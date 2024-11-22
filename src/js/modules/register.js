@@ -7,95 +7,111 @@ const auth = new Auth(V_Global); // Cambia esta URL según tu backend
  * Lógica para manejar el registro del usuario.
  */
 export const Register = {
+  // setupRegisterForm() {
+  //   const form = document.getElementById("registro-form");
+  //   const responseElement = document.getElementById("response");
+
+  //   if (!form) {
+  //     console.error("Formulario de registro no encontrado");
+  //     return;
+  //   }
+
+  //   // Elimina el manejador previo si existe
+  //   form.removeEventListener("submit", form._submitHandler);
+  //   form._submitHandler = async (e) => {
+  //     e.preventDefault(); // Evita el comportamiento predeterminado del formulario
+  //     e.stopPropagation(); // Evita la propagación del evento
+
+  //     responseElement.textContent = "Procesando...";
+  //     responseElement.classList.add("text-gray-500");
+      
+  //     // Usa FormData para extraer los datos del formulario
+  //     const formData = new FormData(form);
+
+  //     try {
+  //       // Convierte FormData en un objeto plano
+  //       const userData = Object.fromEntries(formData.entries());
+
+  //       // Realiza la petición al backend
+  //       const response = await auth.register(userData);
+
+  //       // Actualiza el mensaje de éxito
+  //       responseElement.textContent = `Usuario registrado con éxito: ${response.message}`;
+  //       responseElement.classList.replace("text-gray-500", "text-green-500");
+  //     } catch (error) {
+  //       // Muestra el mensaje de error
+  //       responseElement.textContent = `Error: ${error.message}`;
+  //       responseElement.classList.replace("text-gray-500", "text-red-500");
+  //     }
+  //   };
+
+  //   // Añade nuevamente el evento al formulario
+  //   form.addEventListener("submit", form._submitHandler);
+  // },
   setupRegisterForm() {
     const form = document.getElementById("registro-form");
-    const responseElement = document.getElementById("response");
+    const appElement = document.getElementById("app");
 
     if (!form) {
-      console.error("Formulario de registro no encontrado");
-      return;
+        console.error("Formulario de registro no encontrado");
+        return;
     }
 
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // Elimina el manejador previo si existe
+    form.removeEventListener("submit", form._submitHandler);
+    form._submitHandler = async (e) => {
+        e.preventDefault(); // Evita el comportamiento predeterminado del formulario
+        e.stopPropagation(); // Evita la propagación del evento
 
-      responseElement.textContent = "Procesando...";
-      responseElement.classList.add("text-gray-500");
+        // Usa FormData para extraer los datos del formulario
+        const formData = new FormData(form);
+        const responseElement = document.getElementById("response");
+        try {
+            // Convierte FormData en un objeto plano
+            const userData = Object.fromEntries(formData.entries());
 
-      const userData = {
-        name: form.name.value,
-        email: form.email.value,
-        pin: form.pin.value,
-      };
+            // Realiza la petición al backend
+            const response = await auth.register(userData);
+            if(!response.success){
+              responseElement.textContent = "Hubo un error al registrarse";
+              responseElement.classList.replace("text-gray-700", "text-red-500");
+              return;
+            }
+            const pin = response.pin            
+            this.displaySuccess(pin); // Llama a la función para mostrar el mensaje de éxito
+            return;
+        } catch (error) {
+            // Muestra el mensaje de error
+            responseElement.textContent = `Error: ${error.message}`;
+            responseElement.classList.replace("text-gray-700", "text-red-500");
+        }
+    };
 
-      try {
-        const response = await auth.register(userData);
-        responseElement.textContent = `Usuario registrado con éxito: ${response.message}`;
-        responseElement.classList.replace("text-gray-500", "text-green-500");
-      } catch (error) {
-        responseElement.textContent = `Error: ${error.message}`;
-        responseElement.classList.replace("text-gray-500", "text-red-500");
-      }
-    });
+    // Añade nuevamente el evento al formulario
+    form.addEventListener("submit", form._submitHandler);
+},
 
-    this.displayForm();
-  },
+displaySuccess(pin) {
+  const appElement = document.getElementById("app");
 
-  displayForm() {
-    const appElement = document.getElementById("app"); // Asegúrate de tener un contenedor con este ID
-    if (!appElement) {
-      console.error(
-        "No se encontró el contenedor principal para el formulario."
-      );
+  if (!appElement) {
+      console.error("Contenedor principal no encontrado");
       return;
-    }
+  }
 
-    appElement.innerHTML = `
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md mx-auto">
-          <h1 class="text-2xl font-bold mb-6 text-center text-blue-600">Registro de Usuario</h1>
-          <form id="registro-form" class="space-y-4">
-            <div>
-              <label for="name" class="block text-gray-700 font-medium mb-2">Nombre:</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                required
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                placeholder="Ingresa tu nombre"
-              />
-            </div>
-            <div>
-              <label for="email" class="block text-gray-700 font-medium mb-2">Correo Electrónico:</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                required
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                placeholder="Ingresa tu correo electrónico"
-              />
-            </div>
-            <div>
-              <label for="pin" class="block text-gray-700 font-medium mb-2">PIN:</label>
-              <input
-                type="password"
-                id="pin"
-                name="pin"
-                required
-                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-                placeholder="Crea un PIN"
-              />
-            </div>
-            <button
-                type="submit"
-                class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-bold hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
-            >
-                Registrar
-            </button>
-          </form>
-          <p id="response" class="mt-4 text-center text-gray-700"></p>
-        </div>
-    `;
-  },
+  // Reemplaza el contenido del contenedor con el mensaje de éxito
+  appElement.innerHTML = `
+      <div class="flex flex-col items-center justify-center">
+          <div class="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center mb-4">
+              <svg class="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"></path>
+              </svg>
+          </div>
+          <h2 class="text-xl font-semibold text-green-600 mb-2">¡Registrado correctamente!</h2>
+          <p class="text-gray-700">Su pin de acceso es: <span class="font-bold text-blue-600">${pin}</span></p>
+          <p class="text-gray-500 mt-2">Guárdelo en un lugar seguro.</p>
+      </div>
+  `;
+}
+
 };

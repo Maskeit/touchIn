@@ -14,7 +14,8 @@ export default class Auth {
             const response = await fetch(`${this.baseUrl}/register`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'accept':'application/ld+json',
+                    'Content-Type': 'application/ld+json',
                 },
                 body: JSON.stringify(userData),
             });
@@ -25,8 +26,7 @@ export default class Auth {
             if (!response.ok) {
                 throw new Error(data.error || 'Error en el registro');
             }
-
-            return data; // Retorna el mensaje o información del servidor
+            return data;
         } catch (error) {
             // Manejo de errores
             console.error('Error en Auth.register:', error.message);

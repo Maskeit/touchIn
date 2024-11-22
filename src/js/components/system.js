@@ -1,1 +1,1 @@
-export const V_Global = "http://localhost:8000/";
+export const V_Global = "http://localhost:8000";

@@ -15,21 +15,54 @@ class UserController
 
     public function register($input)
     {
-        if (!isset($input['name'], $input['email'], $input['pin'], $input['fingerprint_template'])) {
-            return ["error" => "Missing required fields."];
+        $response = [
+            "success" => false,
+            "message" => "Error to register user",
+            "pin" => null,
+        ];
+        // Validar que se proporcionen los campos necesarios
+        if (!isset($input['name'], $input['email'])) {
+            return ["error" => "Missing required fields: name or email."];
         }
     
-        $user = new User($input['name'], $input['email'], $input['fingerprint_template'], $input['pin']);
+        // Verificar si el correo ya existe en la base de datos
+        $existingUser = User::findByEmail($this->db, $input['email']);
+        if ($existingUser) {
+            $response["message"] = "User already registered";
+            return $response;
+        }
+    
+        // Generar un PIN único de 4 dígitos
+        $pin = $this->generateUniquePin();
+    
+        // Crear el usuario con el PIN generado
+        $user = new User($input['name'], $input['email'], 'default_template', $pin);
+    
         try {
             if ($user->saveToDatabase($this->db)) {
-                return ["message" => "User registered successfully.", "user_id" => $user->getId()];
+                $response["success"] = true;
+                $response["message"] = "User registered successfully.";
+                $response["pin"] = $pin;
+                return $response;
             }
         } catch (\Exception $e) {
             return ["error" => $e->getMessage()];
         }
     
-        return ["error" => "Failed to register user."];
+        return $response;
     }
+    
+    // Método para generar un PIN único de 4 dígitos
+    private function generateUniquePin()
+    {
+        do {
+            $pin = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT); // Generar un PIN de 4 dígitos
+            $existingPin = User::findByPin($this->db, $pin); // Verificar si ya existe
+        } while ($existingPin);
+    
+        return $pin;
+    }
+    
     
 
     public function getAllUsers()
