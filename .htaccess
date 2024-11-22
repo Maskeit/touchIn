@@ -1,0 +1,14 @@
+# Sirve los archivos del frontend desde /public/
+RewriteEngine On
+
+# Si el archivo o directorio existe, sírvelo directamente
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Si no existe, redirige la petición a /public/index.html
+RewriteRule ^(.*)$ /public/$1 [L]
+
+# Manejo especial para la API
+# Todas las rutas que empiecen con /api las redirige al index.php para la API
+RewriteCond %{REQUEST_URI} ^/api
+RewriteRule ^api/(.*)$ index.php [L]
