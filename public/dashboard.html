@@ -6,11 +6,23 @@
     <title>Dashboard</title>
 </head>
 <body>
-
-
-
+    <div class="container mx-auto p-4">
+        <h1 class="text-3xl font-bold text-center mb-6 text-blue-600">Usuarios Registrados en TouchIn</h1>
+        <table id="user-table" class="table-auto border-collapse border border-gray-300 w-full">
+            <thead>
+                <tr class="bg-blue-500 text-white">
+                    <th class="border border-gray-300 px-4 py-2">ID</th>
+                    <th class="border border-gray-300 px-4 py-2">Nombre</th>
+                    <th class="border border-gray-300 px-4 py-2">Email</th>
+                    <th class="border border-gray-300 px-4 py-2">Fecha de Registro</th>
+                </tr>
+            </thead>
+            <tbody id="user-table-body">
+                <!-- Las filas de usuarios se agregarán dinámicamente aquí -->
+            </tbody>
+        </table>
+        <p id="dashboard-message" class="mt-4 text-center text-gray-700"></p>
+    </div>
     <script src="./js/bundle.js"></script>
-
-    
 </body>
 </html>

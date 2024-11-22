@@ -120,7 +120,7 @@ class User
     public function saveToDatabase($conn)
     {
         $stmt = $conn->prepare("INSERT INTO users (name, email, fingerprint_template, pin, created_at) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssis", $this->name, $this->email, $this->fingerprintTemplate, $this->pin, $this->createdAt);
+        $stmt->bind_param("sssss", $this->name, $this->email, $this->fingerprintTemplate, $this->pin, $this->createdAt);
     
         if ($stmt->execute()) {
             $this->id = $stmt->insert_id; // Asignar el ID generado por la base de datos
@@ -147,7 +147,6 @@ class User
             $row = $result->fetch_assoc();
             $user = new User($row['name'], $row['email'], '', $row['fingerprint_template'], $row['pin']);
             $user->id = $row['id'];
-            $user->passwordHash = $row['password_hash'];
             $user->createdAt = $row['created_at'];
             return $user;
         }
