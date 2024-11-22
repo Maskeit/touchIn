@@ -1,1 +1,0 @@
-export const V_Global = "http://localhost:8000";
