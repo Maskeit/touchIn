@@ -1,13 +1,13 @@
 # Ignorar archivos de desarrollo en producción
 /src/
-*.config.js
-*.json
-*.lock
-*.babelrc
-*.sql
+.babelrc
+package-lock.json
+package.json
+postcss.config.js
+tailwind.config.js
+touchIn.sql
+webpack.config.js
+
 /node_modules/
 /vendor/
-/postcss.config.js
-/tailwind.config.js
-/webpack.config.js
 .gitignore.main
