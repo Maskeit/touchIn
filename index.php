@@ -4,20 +4,19 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\Models\DB;
 use App\Controllers\UserController;
 use App\Controllers\BinnacleController;
-use App\Controllers\Headers;
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Origin: https://mediumspringgreen-yak-566516.hostingersite.com"); // Cambia al dominio frontend correcto
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
-$validateHeaders = new Headers();
-$validateHeaders->validateHeaders();
-date_default_timezone_set('America/Mexico_City');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    // Manejo de preflight para CORS
     http_response_code(200);
     exit;
 }
+date_default_timezone_set('America/Mexico_City');
 // Inicializa la conexión a la base de datos
 $db = new DB();
 $conn = $db->connect();

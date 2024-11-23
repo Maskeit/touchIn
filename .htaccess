@@ -1,10 +1,13 @@
-# Habilitar el motor de reescritura
+# Habilitar motor de reescritura
 RewriteEngine On
 
-# 1. Las solicitudes que comiencen con /api deben dirigirse al index.php para manejar la API
+# 1. Las solicitudes que comiencen con /api deben dirigirse al index.php
 RewriteCond %{REQUEST_URI} ^/api/
-RewriteRule ^ - [L]
+RewriteRule ^ index.php [L]
 
-# 3. Las demás solicitudes deben dirigirse a /public/
-RewriteCond %{REQUEST_URI} !^/public/
+# 2. Servir directamente si existe el archivo o directorio
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# 3. Redirigir las solicitudes restantes a /public/
 RewriteRule ^(.*)$ public/$1 [L]
