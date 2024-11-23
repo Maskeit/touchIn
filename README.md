@@ -1,14 +1,18 @@
 # touchIn
 ## Como hacer peticiones en la api Usando la herramienta de Postman
-![postman](/public/images/postman.png)
 
 
+
+## Dominio de produccion
+Reemplaza `http://localhost:8000` por el siguiente dominio
+<pre><code>https://mediumspringgreen-yak-566516.hostingersite.com<code></pre>
 ## Para registrar a un usuario
 
-Mediante el método `POST` el endpoint es 
-<pre><code>http://localhost:8000/register </code></pre>
+Mediante el método `POST` el endpoint es
+<pre><code>http://localhost:8000/api/register </code></pre>
 ### Headers
 ```json
+Accept: application/json
 Content-Type: application/json
 ```
 ### Enviar el body en formato JSON:
@@ -41,7 +45,7 @@ si falta un campo o atributo en la solicitud podrias tener este error:
 ## Para autenticar un usuario
 
 Mediante el método `POST` el endpoint es:
-<pre><code>http://localhost:8000/auth/pin</code></pre>
+<pre><code>http://localhost:8000/api/auth/pin</code></pre>
 ### Headers
 ```json
 Content-Type: application/json
@@ -75,11 +79,10 @@ Si la respuesta es exitosa (`200`):
 
 ## Para obtener la lista de usuarios completa
 Mediante el método `GET` el endpoint es:
-<pre><code> http://localhost:8000/users </pre></code>
+<pre><code> http://localhost:8000/api/users </pre></code>
 ### Headers
 ```json
-Content-Type:application/ld+json
-Accept:application/ld+json
+Accept:application/json
 ```
 Y el cuerpo de la respuesta es la lista de usuarios:
 
@@ -99,11 +102,10 @@ Y el cuerpo de la respuesta es la lista de usuarios:
 ## Para obtener la informacion de un solo usuario
 
 Mediante el método `GET` el endpoint es:
-<pre><code> http://localhost:8000/users/id </pre></code>
+<pre><code> http://localhost:8000/api/users/id </pre></code>
 ### Headers
 ```json
-Content-Type:application/ld+json
-Accept:application/ld+json
+Accept: application/json
 ```
 Y el cuerpo de la respuesta es el usuario:
 ```json

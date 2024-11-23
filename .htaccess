@@ -2,13 +2,9 @@
 RewriteEngine On
 
 # 1. Las solicitudes que comiencen con /api deben dirigirse al index.php para manejar la API
-RewriteCond %{REQUEST_URI} ^/api/ [NC]
-RewriteRule ^(.*)$ index.php [L,QSA]
-
-# 2. Las solicitudes para archivos o directorios existentes deben servirse directamente
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^ - [L]
 
 # 3. Las demás solicitudes deben dirigirse a /public/
+RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ public/$1 [L]
