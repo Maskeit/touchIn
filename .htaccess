@@ -1,13 +1,17 @@
 # Habilitar motor de reescritura
 RewriteEngine On
 
-# 1. Las solicitudes que comiencen con /api deben dirigirse al index.php
+# 1. Ignorar solicitudes a recursos estáticos (CSS, JS, imágenes, etc.)
+RewriteCond %{REQUEST_URI} \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|eot|map)$ [NC]
+RewriteRule ^ - [L]
+
+# 2. Las solicitudes que comiencen con /api deben dirigirse al index.php
 RewriteCond %{REQUEST_URI} ^/api/
 RewriteRule ^ index.php [L]
 
-# 2. Servir directamente si existe el archivo o directorio
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-
-# 3. Redirigir las solicitudes restantes a /public/
+# 2. Si el archivo o directorio existe, servirlo directamente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# 4. Redirigir las solicitudes restantes a /public/
 RewriteRule ^(.*)$ public/$1 [L]

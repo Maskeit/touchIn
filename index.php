@@ -5,10 +5,23 @@ use App\Models\DB;
 use App\Controllers\UserController;
 use App\Controllers\BinnacleController;
 
-header("Access-Control-Allow-Origin: https://mediumspringgreen-yak-566516.hostingersite.com"); // Cambia al dominio frontend correcto
+// Lista de dominios permitidos
+$allowedOrigins = [
+    "http://localhost:9000",
+    "https://mediumspringgreen-yak-566516.hostingersite.com"
+];
+// Verificar si el origen de la solicitud está en la lista de permitidos
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+    header("Access-Control-Allow-Credentials: true");
+} else {
+    http_response_code(403); // Prohibido
+    echo json_encode(["error" => "Origin not allowed."]);
+    exit;
+}
+
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
